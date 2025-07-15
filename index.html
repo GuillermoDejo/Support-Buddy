@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Toolbox</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+    }
+    nav {
+      width: 250px;
+      background-color: #1a1a1a;
+      color: white;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    nav h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    nav ul {
+      list-style: none;
+      padding: 0;
+    }
+    nav li {
+      margin-bottom: 10px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+    }
+    main {
+      flex-grow: 1;
+      padding: 20px;
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+    textarea, input, select, button {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2>Toolbox</h2>
+    <ul>
+      <li><a href="#" onclick="showPage('json')">JSON Formatter</a></li>
+      <li><a href="#" onclick="showPage('timestamp')">Unix Timestamp</a></li>
+      <li><a href="#" onclick="showPage('utf8')">UTF-8 Encode/Decode</a></li>
+      <li><a href="#" onclick="showPage('redirect')">Redirect Tracker</a></li>
+      <li><a href="#" onclick="showPage('cname')">CNAME Lookup</a></li>
+      <li><a href="#" onclick="showPage('caa')">CAA Lookup</a></li>
+      <li><a href="#" onclick="showPage('domain')">Domain Checker</a></li>
+    </ul>
+  </nav>
+  <main>
+    <section id="json" class="active">
+      <h2>JSON Formatter</h2>
+      <textarea id="jsonInput" rows="10" placeholder="Paste your JSON here..."></textarea>
+      <button onclick="formatJSON()">Format</button>
+      <pre id="jsonOutput"></pre>
+    </section>
+    <section id="timestamp">
+      <h2>Unix Timestamp Tool</h2>
+      <div id="currentTimestamp"></div>
+      <input type="number" id="inputTimestamp" placeholder="Enter timestamp" />
+      <button onclick="convertToDate()">Convert to Date</button>
+      <div id="dateOutput"></div>
+      <input type="datetime-local" id="inputDateTime" />
+      <button onclick="convertToTimestamp()">Convert to Timestamp</button>
+      <div id="timestampOutput"></div>
+    </section>
+    <section id="utf8">
+      <h2>UTF-8 Encode/Decode</h2>
+      <textarea id="utfInput" placeholder="Enter text"></textarea>
+      <button onclick="encodeUTF()">Encode</button>
+      <button onclick="decodeUTF()">Decode</button>
+      <pre id="utfOutput"></pre>
+    </section>
+    <section id="redirect">
+      <h2>Redirect Tracker</h2>
+      <input id="redirectUrl" placeholder="Enter URL to check redirects" />
+      <button onclick="checkRedirects()">Check</button>
+      <pre id="redirectOutput"></pre>
+    </section>
+    <section id="cname">
+      <h2>CNAME Lookup</h2>
+      <input id="cnameDomain" placeholder="Enter domain" />
+      <button onclick="lookupCNAME()">Lookup</button>
+      <pre id="cnameOutput"></pre>
+    </section>
+    <section id="caa">
+      <h2>CAA Lookup</h2>
+      <input id="caaDomain" placeholder="Enter domain" />
+      <button onclick="lookupCAA()">Lookup</button>
+      <pre id="caaOutput"></pre>
+    </section>
+    <section id="domain">
+      <h2>Branded Domain Checker</h2>
+      <input id="domainCheck" placeholder="Enter domain" />
+      <button onclick="checkBranded()">Check</button>
+      <pre id="brandedOutput"></pre>
+    </section>
+  </main>
+
+
+  <script>
+    const brandedDomains = ["brand1.com", "brand2.net", "brand3.org"];
+
+    function showPage(id) {
+      document.querySelectorAll('section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(id).classList.add('active');
+    }
+
+    function formatJSON() {
+      const input = document.getElementById('jsonInput').value;
+      const output = document.getElementById('jsonOutput');
+      try {
+        const parsed = JSON.parse(input);
+        output.textContent = JSON.stringify(parsed, null, 2);
+        output.style.color = 'black';
+      } catch (e) {
+        output.textContent = 'Invalid JSON: ' + e.message;
+        output.style.color = 'red';
+      }
+    }
+
+    function convertToDate() {
+      const ts = parseInt(document.getElementById('inputTimestamp').value);
+      const date = new Date(ts * 1000);
+      document.getElementById('dateOutput').textContent = date.toUTCString();
+    }
+
+    function convertToTimestamp() {
+      const dt = document.getElementById('inputDateTime').value;
+      const timestamp = Math.floor(new Date(dt).getTime() / 1000);
+      document.getElementById('timestampOutput').textContent = timestamp;
+    }
+
+    function updateCurrentTimestamp() {
+      document.getElementById('currentTimestamp').textContent = 'Current Timestamp: ' + Math.floor(Date.now() / 1000);
+    }
+
+    setInterval(updateCurrentTimestamp, 1000);
+
+    function encodeUTF() {
+      const text = document.getElementById('utfInput').value;
+      document.getElementById('utfOutput').textContent = encodeURIComponent(text);
+    }
+
+    function decodeUTF() {
+      const text = document.getElementById('utfInput').value;
+      document.getElementById('utfOutput').textContent = decodeURIComponent(text);
+    }
+
+    async function checkRedirects() {
+      const url = document.getElementById('redirectUrl').value;
+      const res = await fetch('/api/redirect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+      document.getElementById('redirectOutput').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function lookupCNAME() {
+      const domain = document.getElementById('cnameDomain').value;
+      const res = await fetch('/api/cname?domain=' + encodeURIComponent(domain));
+      const data = await res.json();
+      document.getElementById('cnameOutput').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function lookupCAA() {
+      const domain = document.getElementById('caaDomain').value;
+      const res = await fetch('/api/caa?domain=' + encodeURIComponent(domain));
+      const data = await res.json();
+      document.getElementById('caaOutput').textContent = JSON.stringify(data, null, 2);
+    }
+
+    function checkBranded() {
+      const domain = document.getElementById('domainCheck').value.trim();
+      const isBranded = brandedDomains.includes(domain);
+      document.getElementById('brandedOutput').textContent = isBranded ? "✔ Branded domain" : "❌ Not branded";
+    }
+  </script>
+
+
+</body>
+</html>
