@@ -1,4 +1,5 @@
 Support-Buddy
+
 A lightweight, multi-tool web interface for developers and support engineers. Designed for quick access to useful utilities like JSON formatting, timestamp conversions, encoding/decoding, DNS lookups, and domain diagnostics.
 
 ⸻
