@@ -14,8 +14,4 @@ UTF-8 Encoder/Decoder • Encode and decode strings using UTF-8/URL encoding.
 
 Redirect Tracker • Track HTTP redirections for URLs. • Simulate device type (Android, iOS, Desktop) and region.
 
-CNAME Lookup • Lookup CNAME records for a domain.
-
-CAA Lookup • Retrieve CAA DNS records.
-
 Branded Domain Checker • Check if a domain belongs to a predefined branded list (custom logic).
